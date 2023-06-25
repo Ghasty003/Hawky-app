@@ -5,6 +5,7 @@ import { Provider } from "react-native-paper";
 
 import Login from './src/screens/Login';
 import { StackParam } from './src/utils/types';
+import Register from './src/screens/Register';
 
 
 const Stack = createNativeStackNavigator<StackParam>();
@@ -15,6 +16,7 @@ export default function App() {
       <Provider>
         <Stack.Navigator initialRouteName='Login'>
           <Stack.Screen name='Login' component={Login} />
+          <Stack.Screen name='Register' component={Register} />
         </Stack.Navigator>
         <StatusBar style="auto" />
       </Provider>
