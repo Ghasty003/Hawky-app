@@ -7,3 +7,4 @@ export type StackParam = {
 
 
 export type LoginProp = NativeStackScreenProps<StackParam, "Login">;
+export type RegisterProp = NativeStackScreenProps<StackParam, "Register">;
