@@ -20,7 +20,7 @@ function Home({ navigation }: HomeProp) {
         <View style={styles.container}>
             <Header />
             <RecentChat />
-            <ChatList />
+            <ChatList navigation={navigation} />
         </View>
     );
 }

@@ -1,38 +1,58 @@
-import React from 'react';
-import { View, StyleSheet, FlatList, Image, Text } from "react-native";
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, FlatList, Image, Text, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-function ChatList() {
+import { Friend, User } from '../utils/types';
 
-    const data = [
-        {name: "John Doe", lastMessage: "Hello"},
-        {name: "Kate Doe", lastMessage: "Hi"},
-        {name: "John Doe", lastMessage: "Hello"},
-        {name: "Kate Doe", lastMessage: "Hi"},
-        {name: "John Doe", lastMessage: "Hello"},
-        {name: "Kate Doe", lastMessage: "Hi"},
-        {name: "John Doe", lastMessage: "Hello"},
-        {name: "Kate Doe", lastMessage: "Hi"},
-        {name: "John Doe", lastMessage: "Hello"},
-        {name: "Kate Doe", lastMessage: "Hi"},
-        {name: "John Doe", lastMessage: "Hello"},
-        {name: "Kate Doe", lastMessage: "Hi"},
-    ]
+function ChatList({ navigation }: any) {
+
+    const [friends, setFriends] = useState<Friend[]>([]);
+    const [user, setUser] = useState<User>();
+
+    useEffect(() => {
+        async function getFriends() {
+            let user = JSON.parse(await AsyncStorage.getItem("user") as any) as any;
+            setUser(user);
+            const res = await fetch("https://hawky.onrender.com/api/friend", {
+                headers: {
+                    "Authorization": `Bearer ${user?.token}`
+                }
+            });
+            const json = await res.json();
+
+            if (!res.ok) {
+                console.log("Error: ", json.error);
+                return;
+            }
+
+            // console.log(json);
+            setFriends(json);
+        }
+
+        getFriends();
+    }, []);
+
 
     return (
         <View style={styles.container}>
             <FlatList 
-                data={data}
+                data={friends}
                 renderItem={({ item }) => (
-                    <View style={styles.chatContainer}>
-                        <Image 
-                            source={require("../../assets/avatar-food.png")}
-                            style={{ width: 65, height: 65 }} 
-                        />
-                        <View style={styles.messageContainer}>
-                            <Text style={styles.nameText}>{item.name}</Text>
-                            <Text style={styles.messageText}>{item.lastMessage}</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate("Chats")}>
+                        <View style={styles.chatContainer}>
+                            <Image 
+                                source={require("../../assets/avatar-food.png")}
+                                style={{ width: 65, height: 65 }} 
+                            />
+                            <View style={styles.messageContainer}>
+                                <Text style={styles.nameText}>
+                                    {item.friendDetails.userName === user?.userName ?
+                                    item.friendDetails.friendUsername : item.friendDetails.userName}
+                                </Text>
+                                <Text style={styles.messageText}>Hello</Text>
+                            </View>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 )}
                 showsVerticalScrollIndicator={false}
             />

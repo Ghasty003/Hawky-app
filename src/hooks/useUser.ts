@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { User } from '../utils/types';
 
 function useUser() {
-    const [user, setUser] = useState<string | null>("");
+    const [user, setUser] = useState<User>();
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         AsyncStorage.getItem("user")
-        .then(data => setUser(data))
+        .then(data => setUser(JSON.parse(data!)))
     }, []);
 
     return {
