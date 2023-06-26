@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
 
 function Header() {
     return (
@@ -11,12 +12,7 @@ function Header() {
                 }}
             >Messages</Text>
             <TouchableOpacity>
-                <Text
-                style={{
-                    color: "white",
-                    fontSize: 20
-                }}
-                >Icon</Text>
+                <Icon name='search' size={25} color="white" />
             </TouchableOpacity>
         </View>
     );
