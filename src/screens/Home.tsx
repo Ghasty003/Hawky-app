@@ -6,6 +6,7 @@ import { HomeProp } from '../utils/types';
 import Header from '../components/Header';
 import colors from '../utils/colors';
 import RecentChat from '../components/RecentChat';
+import ChatList from '../components/ChatList';
 
 function Home({ navigation }: HomeProp) {
 
@@ -19,6 +20,7 @@ function Home({ navigation }: HomeProp) {
         <View style={styles.container}>
             <Header />
             <RecentChat />
+            <ChatList />
         </View>
     );
 }
