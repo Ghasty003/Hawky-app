@@ -16,7 +16,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Provider>
-        <Stack.Navigator initialRouteName='Chats'>
+        <Stack.Navigator initialRouteName='Login'>
           <Stack.Screen name='Login' component={Login} />
           <Stack.Screen name='Register' component={Register} />
           <Stack.Screen name='Home' component={Home} />
