@@ -7,6 +7,7 @@ import Login from './src/screens/Login';
 import { StackParam } from './src/utils/types';
 import Register from './src/screens/Register';
 import Home from './src/screens/Home';
+import Chats from './src/screens/Chats';
 
 
 const Stack = createNativeStackNavigator<StackParam>();
@@ -15,10 +16,11 @@ export default function App() {
   return (
     <NavigationContainer>
       <Provider>
-        <Stack.Navigator initialRouteName='Home'>
+        <Stack.Navigator initialRouteName='Chats'>
           <Stack.Screen name='Login' component={Login} />
           <Stack.Screen name='Register' component={Register} />
           <Stack.Screen name='Home' component={Home} />
+          <Stack.Screen name='Chats' component={Chats} />
         </Stack.Navigator>
         {/* <StatusBar style="auto" /> */}
       </Provider>
