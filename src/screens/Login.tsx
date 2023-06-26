@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, Image,
  TouchableOpacity, TextInput as RNTI,
  TouchableWithoutFeedback
@@ -6,6 +6,7 @@ import { View, Text, StyleSheet, Image,
 from 'react-native';
 import { TextInput, Button } from "react-native-paper";
 import Icon from "react-native-vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import colors from '../utils/colors';
 import { LoginProp } from "../utils/types";
@@ -15,6 +16,11 @@ function Login({ navigation }: LoginProp) {
 
     const usernameRef = useRef<RNTI>(null!);
     const passwordRef = useRef<RNTI>(null!);
+
+    const [userName, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+
+    const [loading, setLoading] = useState(false);
 
     const [value, toggleValue] = useToggle(true);
 
@@ -27,6 +33,34 @@ function Login({ navigation }: LoginProp) {
     const handleContainerPress = () => {
         usernameRef.current.blur();
         passwordRef.current.blur();
+    }
+
+    const handleLogin = async () => {
+        setLoading(true);
+
+        try {
+            const res = await fetch("https://hawky.onrender.com/api/user/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ userName, password })
+            });
+            const json = await res.json();
+
+            if (!res.ok) {
+                console.log(json.error);
+                setLoading(false);
+                return;
+            }
+
+            await AsyncStorage.setItem('user', JSON.stringify(json));
+            navigation.navigate("Home");
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
     }
 
     return (
@@ -49,6 +83,8 @@ function Login({ navigation }: LoginProp) {
                             style={styles.input}
                             right={<TextInput.Icon icon={() => <Icon name='person' size={20} />} />}
                             ref={usernameRef}
+                            value={userName}
+                            onChangeText={setUsername}
                         />
 
                         <TextInput
@@ -59,12 +95,15 @@ function Login({ navigation }: LoginProp) {
                             style={styles.input}
                             right={<TextInput.Icon
                                 icon={() => <Icon onPress={toggleValue} name={value ? "eye" : "eye-off"} size={20} />} />}
+                            value={password}
+                            onChangeText={setPassword}
                         />
 
                         <TouchableOpacity
                             style={{
                                 marginTop: 30
                             }}
+                            onPress={handleLogin}
                         >
                             <Button
                                 mode="elevated"
@@ -73,8 +112,9 @@ function Login({ navigation }: LoginProp) {
                                 style={{
                                     paddingVertical: 3,
                                 }}
-                            >
-                                Login
+                                disabled={loading}
+                            >  
+                                { loading ? "Loading..." : "Login" }
                             </Button>
                         </TouchableOpacity>
                     </View>
