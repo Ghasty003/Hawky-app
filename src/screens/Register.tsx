@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, Image,
  TouchableOpacity, TextInput as RNTI,
  TouchableWithoutFeedback
@@ -6,6 +6,7 @@ import { View, Text, StyleSheet, Image,
 from 'react-native';
 import { TextInput, Button } from "react-native-paper";
 import Icon from "react-native-vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import colors from '../utils/colors';
 import { RegisterProp } from "../utils/types";
@@ -15,6 +16,12 @@ function Register({ navigation }: RegisterProp) {
 
     const usernameRef = useRef<RNTI>(null!);
     const passwordRef = useRef<RNTI>(null!);
+
+    const [email, setEmail] = useState("");
+    const [userName, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+
+    const [loading, setLoading] = useState(false);
 
     const [value, toggleValue] = useToggle(true);
 
@@ -27,6 +34,34 @@ function Register({ navigation }: RegisterProp) {
     const handleContainerPress = () => {
         usernameRef.current.blur();
         passwordRef.current.blur();
+    }
+
+    const handleRegister = async () => {
+        setLoading(true);
+
+        try {
+            const res = await fetch("https://hawky.onrender.com/api/user/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ userName, password, email })
+            });
+            const json = await res.json();
+
+            if (!res.ok) {
+                console.log(json.error);
+                setLoading(false);
+                return;
+            }
+
+            await AsyncStorage.setItem('user', JSON.stringify(json));
+            navigation.navigate("Home");
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
     }
 
     return (
@@ -45,10 +80,22 @@ function Register({ navigation }: RegisterProp) {
                     >
                         <TextInput
                             mode="flat" 
+                            label="Email"
+                            style={styles.input}
+                            right={<TextInput.Icon icon={() => <Icon name='mail' size={20} />} />}
+                            ref={usernameRef}
+                            value={email}
+                            onChangeText={setEmail}
+                        />
+
+                        <TextInput
+                            mode="flat" 
                             label="Username"
                             style={styles.input}
                             right={<TextInput.Icon icon={() => <Icon name='person' size={20} />} />}
                             ref={usernameRef}
+                            value={userName}
+                            onChangeText={setUsername}
                         />
 
                         <TextInput
@@ -59,12 +106,15 @@ function Register({ navigation }: RegisterProp) {
                             style={styles.input}
                             right={<TextInput.Icon
                                 icon={() => <Icon onPress={toggleValue} name={value ? "eye" : "eye-off"} size={20} />} />}
+                            value={password}
+                            onChangeText={setPassword}
                         />
 
                         <TouchableOpacity
                             style={{
                                 marginTop: 30
                             }}
+                            onPress={handleRegister}
                         >
                             <Button
                                 mode="elevated"
@@ -73,8 +123,9 @@ function Register({ navigation }: RegisterProp) {
                                 style={{
                                     paddingVertical: 3,
                                 }}
+                                disabled={loading}
                             >
-                                Register
+                                { loading ? "Loading..." : "Register" }
                             </Button>
                         </TouchableOpacity>
                     </View>
